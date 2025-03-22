@@ -1,0 +1,16 @@
+$header: 4dvw;
+
+header{
+  background-color: var(--dark-blue-bemol);
+  position: fixed;
+  top: 0;
+  height: $header;
+}
+
+.actions{
+  width: 10%;
+}
+
+.login:hover{
+  background-color: #4e4f9c;
+}

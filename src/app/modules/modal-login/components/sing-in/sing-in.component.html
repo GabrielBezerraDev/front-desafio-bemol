@@ -1,0 +1,45 @@
+<div class="flex flex-col gap-3 w-full" [formGroup]="formUser">
+  <div class="inline-flex flex-col gap-2 w-full">
+    <label for="username" class="text-primary-50 font-semibold"
+      >Email/CPF</label
+    >
+    <input
+      pInputText
+      formControlName="emailOrCpf"
+      id="username"
+      class="!bg-white/30 w-full !border-2 !p-4 !text-primary-50 w-80"
+    />
+  </div>
+  <div class="inline-flex flex-col gap-2 w-full">
+    <label for="password" class="text-primary-50 font-semibold">Senha</label>
+    <input
+      pInputText
+      formControlName="password"
+      id="password"
+      class="!bg-white/30 w-full !border-2 !p-4 !text-primary-50 w-80"
+      type="password"
+    />
+  </div>
+  <small class="text-red-600">{{ formUserError() }}</small>
+  <small
+    (click)="changeStatusAccount()"
+    class="hover:text-blue-500 cursor-pointer"
+    >Não possui uma conta? Crie aqui!</small
+  >
+  <div class="flex items-center gap-4">
+    <p-button
+      label="Cancel"
+      (click)="closeModal()"
+      [text]="true"
+      styleClass="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
+      class="w-full"
+    />
+    <p-button
+      label="Entrar"
+      (click)="login()"
+      [text]="true"
+      styleClass="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
+      class="w-full"
+    />
+  </div>
+</div>

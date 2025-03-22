@@ -1,0 +1,219 @@
+<p-stepper #stepper [value]="1" class="basis-[50rem]" [linear]="true">
+  <p-step-list>
+    <p-step [value]="1">Crie uma conta</p-step>
+    <p-step [value]="2">Endereço</p-step>
+  </p-step-list>
+  <p-step-panels>
+    <p-step-panel [value]="1">
+      <ng-template #content let-activateCallback="activateCallback">
+        <div [formGroup]="formUser" class="flex flex-col gap-3 items-center">
+          <div class="inline-flex flex-col gap-2">
+            <label for="email" class="text-primary-50 font-semibold"
+              >Email<span class="text-red-600"> *</span></label
+            >
+            <input
+              formControlName="email"
+              pInputText
+              id="email"
+              class="!bg-white/30 !border-2 !p-4 !text-primary-50 w-80"
+            />
+            @if(userFormErrors()["email"][0]){<small class="text-red-600">{{
+              userFormErrors()["email"][1]
+            }}</small
+            >}
+          </div>
+          <div class="inline-flex flex-col gap-2">
+            <label for="cpf" class="text-primary-50 font-semibold">CPF<span class="text-red-600"> *</span></label>
+            <input
+              formControlName="cpf"
+              pInputText
+              id="cpf"
+              class="!bg-white/30 !border-2 !p-4 !text-primary-50 w-80"
+            />
+            @if(userFormErrors()["cpf"][0]){<small class="text-red-600">{{
+              userFormErrors()["cpf"][1]
+            }}</small
+            >}
+          </div>
+          <div class="inline-flex flex-col gap-2">
+            <label for="password" class="text-primary-50 font-semibold"
+              >Senha<span class="text-red-600"> *</span></label
+            >
+            <input
+              formControlName="password"
+              pInputText
+              id="password"
+              class="!bg-white/30 !border-2 !p-4 !text-primary-50 w-80"
+              type="password"
+            />
+            @if(userFormErrors()["password"][0]){<small class="text-red-600">{{
+              userFormErrors()["password"][1]
+            }}</small
+            >}
+          </div>
+          <div class="inline-flex flex-col gap-2">
+            <label for="passwordValidate" class="text-primary-50 font-semibold"
+              >Repetir Senha<span class="text-red-600"> *</span></label
+            >
+            <input
+              formControlName="passwordValidate"
+              pInputText
+              id="passwordValidate"
+              class="!bg-white/30 !border-2 !p-4 !text-primary-50 w-80"
+              type="password"
+            />
+            @if(userFormErrors()["passwordValidate"][0]){<small
+              class="text-red-600"
+              >{{ userFormErrors()["passwordValidate"][1] }}</small
+            >}
+          </div>
+          <small
+          (click)="changeStatusAccount()"
+          class="hover:text-blue-500 cursor-pointer"
+          >Já possui uma conta? Faça login</small
+        >
+          <div class="flex items-center gap-4 w-full justify-between px-7">
+            <p-button
+              label="Cancel"
+              (click)="closeModal()"
+              [text]="true"
+              class="hover:bg-slate-300 p-1"
+            />
+            <p-button
+              label="Próximo"
+              (onClick)="submitSignForm()"
+              [text]="true"
+              icon="pi pi-arrow-right"
+              iconPos="right"
+              class="hover:bg-slate-300 p-1"
+            />
+          </div>
+        </div>
+      </ng-template>
+    </p-step-panel>
+
+    <p-step-panel [value]="2">
+      <ng-template #content let-activateCallback="activateCallback">
+        <div class="flex flex-col gap-3" [formGroup]="formCep">
+          <div class="flex flex-col gap-4">
+            <p-inputgroup>
+              <p-inputgroup-addon>
+                <i class="pi pi-map-marker"></i>
+              </p-inputgroup-addon>
+              <input
+                class="input-adress"
+                #cep
+                pInputText
+                placeholder="CEP *"
+                formControlName="cep"
+              />
+              <p-inputgroup-addon class="border">
+                <p-button
+                  (onClick)="getCep(cep.value)"
+                  icon="pi pi-search"
+                  severity="secondary"
+                />
+              </p-inputgroup-addon>
+              <div class="flex justify-end items-center">
+                <a
+                  href="https://buscacepinter.correios.com.br/app/endereco/index.php"
+                  target="_blank"
+                  ><i
+                    pTooltip="Se você não sabe o seu cep, clique na interrogação para descobrir."
+                    tooltipPosition="right"
+                    class="pi pi-question-circle ps-3"
+                  ></i
+                ></a>
+              </div>
+            </p-inputgroup>
+            @if(cepErrorMessage()){<small class="text-red-600">{{
+              cepErrorMessage()
+            }}</small
+            >}
+          </div>
+          <div class="flex gap-3 w-full">
+            <div class="flex flex-col flex-grow">
+              <p-inputgroup>
+                <p-inputgroup-addon>
+                  <i class="pi pi-map"></i>
+                </p-inputgroup-addon>
+                <p-select
+                  #estadoSelect
+                  [filter]="true"
+                  filterBy="name"
+                  [options]="ufsSelect()"
+                  optionLabel="name"
+                  placeholder="Estados *"
+                  formControlName="estados"
+                />
+              </p-inputgroup>
+              @if(addressFormErrors()["estados"][0]){<small class="text-red-600">{{addressFormErrors()["estados"][1]}}</small>}
+            </div>
+            <div class="flex flex-col flex-grow">
+              <p-inputgroup>
+                <p-inputgroup-addon>
+                  <i class="bi bi-geo-fill"></i>
+                </p-inputgroup-addon>
+                <p-select
+                  #selectMunicipio
+                  [filter]="true"
+                  filterBy="name"
+                  [options]="municipiosSelect()"
+                  optionLabel="name"
+                  placeholder="Município *"
+                  formControlName="municipios"
+                />
+              </p-inputgroup>
+              @if(addressFormErrors()["municipios"][0]){<small class="text-red-600">{{addressFormErrors()["municipios"][1]}}</small>}
+            </div>
+          </div>
+          <div class="flex gap-3 w-full">
+            <div class="flex flex-col flex-grow">
+              <p-inputgroup>
+                <p-inputgroup-addon>
+                  <i class="bi bi-signpost-split"></i>
+                </p-inputgroup-addon>
+                <input
+                  pInputText
+                  class="input-adress"
+                  placeholder="Endereço *"
+                  formControlName="address"
+                />
+              </p-inputgroup>
+              @if(addressFormErrors()["address"][0]){<small class="text-red-600">{{addressFormErrors()["address"][1]}}</small>}
+            </div>
+            <div class="flex flex-col flex-grow">
+              <p-inputgroup>
+                <p-inputgroup-addon>
+                  <i class="pi pi-home"></i>
+                </p-inputgroup-addon>
+                <input
+                  pInputText
+                  class="input-adress"
+                  placeholder="N. da casa *"
+                  formControlName="houseNumber"
+                  style="height: 40px"
+                />
+              </p-inputgroup>
+              @if(addressFormErrors()["houseNumber"][0]){<small class="text-red-600">{{addressFormErrors()["houseNumber"][1]}}</small>}
+            </div>
+          </div>
+          <div class="flex pt-6 justify-between">
+            <p-button
+              class="hover:bg-slate-300 p-1"
+              label="Voltar"
+              severity="secondary"
+              icon="pi pi-arrow-left"
+              (onClick)="activateCallback(1)"
+            />
+            <p-button
+              class="hover:bg-slate-300 p-1"
+              label="Enviar"
+              (onClick)="submitCepForm()"
+            />
+          </div>
+        </div>
+      </ng-template>
+    </p-step-panel>
+  </p-step-panels>
+</p-stepper>

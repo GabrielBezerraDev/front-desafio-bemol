@@ -1,0 +1,7 @@
+@use "./components/header/header.component.scss" as *;
+
+div{
+  margin-top: $header;
+  height: 100%;
+  min-height: 100%;
+}

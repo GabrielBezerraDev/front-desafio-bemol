@@ -1,0 +1,27 @@
+<p-dialog
+  maskStyleClass="backdrop-blur-sm"
+  [(visible)]="visible"
+  [style]="{width:'30%'}"
+  styleClass="!border-0 !bg-transparent"
+  modal="true"
+>
+  <ng-template #headless>
+    <div
+      class="flex flex-col px-8 py-8 gap-6 rounded-2xl bg-slate-100"
+      style="border-radius: 12px;"
+    >
+      @if(haveAccount()){
+        <app-sing-in
+        (onCloseModal)="closeModal()"
+        (onChangeStatusAccount)="changeStatusAccount($event)"
+        ></app-sing-in>
+      }
+      @else{
+        <app-sing-up
+        (onCloseModal)="closeModal()"
+        (onChangeStatusAccount)="changeStatusAccount($event)"
+        ></app-sing-up>
+      }
+    </div>
+  </ng-template>
+</p-dialog>

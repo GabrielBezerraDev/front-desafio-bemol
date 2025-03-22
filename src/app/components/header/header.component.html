@@ -1,0 +1,14 @@
+<header class="w-full flex px-4 justify-between">
+  <div class="flex">
+    <img src="/bemol.png">
+  </div>
+  <div class="actions flex items-center justify-center text-white">
+    <div class="cursor-pointer py-1 px-2 login flex gap-1 items-center justify-center" (click)="openModal()">
+      <b>Login</b>
+      <i class="pt-1 pi pi-id-card"></i>
+    </div>
+  </div>
+</header>
+
+<app-modal-login #modalLogin></app-modal-login>
+

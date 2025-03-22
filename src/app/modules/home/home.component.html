@@ -1,0 +1,45 @@
+<main class="w-full h-full flex items-center justify-center p-14">
+  <div class="flex flex-col h-full w-full shadow-lg rounded-sm">
+    <div class="header-panel dark-blue-bemol rounded-tr-md rounded-tl-md flex items-center justify-center">
+      <b class="text-4xl text-white">Portal de Atendimento ao Cliente</b>
+    </div>
+    <div class="panel flex">
+      <aside class="aside-chat border bg-slate-100 flex flex-col justify-between">
+        <div class="flex flex-col">
+          <div class="list-element flex items-center gap-5 font-bold text-blue-900 p-7">
+            <img src="chat-round-line-svgrepo-com.svg" width="15%">
+            <p> Iniciar uma nova conversa</p>
+          </div>
+          <hr class="text-black  ">
+          <div class="list-element flex items-center gap-5 font-bold text-blue-900 p-7">
+            <img src="/telegram-svgrepo-com.svg" width="15%">
+            <p> Iniciar chat no Telegram</p>
+          </div>
+          <hr class="text-black  ">
+          <div class="list-element flex items-center gap-5 font-bold text-blue-900 p-7">
+            <img src="/discord-svgrepo-com.svg" width="15%">
+            <p> Iniciar chat no Discord</p>
+          </div>
+          <hr class="text-black  ">
+        </div>
+        <div class="w-full p-2 flex justify-end cursor-pointer">
+          <img pTooltip="Enter your username" tooltipPosition="top" src="/question-circle-svgrepo-com.svg" width="10%">
+        </div>
+      </aside>
+      <div class="chat bg-white flex flex-col">
+        <div class="panel-chat flex items-center justify-center flex-col">
+          <img src="/Sent Message-bro.svg" width="33%">
+          <b class="text-4xl text-white " >Não há nenhuma conversa iniciada</b>
+        </div>
+        <div class="panel-input p-3 flex items-center justify-center border">
+          <p-floatlabel variant="on" class="w-full h-12 border rounded-sm">
+          <input pInputText class="w-full h-12 px-5 bg-slate-100" id="on_label"  autocomplete="off" />
+            <label for="on_label">On Label</label>
+        </p-floatlabel>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
