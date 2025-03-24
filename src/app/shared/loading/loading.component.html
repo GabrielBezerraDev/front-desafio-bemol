@@ -1,0 +1,27 @@
+<p-dialog class="flex items-center justify-center flex-col" header="{{title}}" [closeIcon]="'none'" [draggable]="false" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+
+  @if(!succeed && !error){
+    <div class="w-full flex items-center justify-center">
+      <p-progress-spinner ariaLabel="loading" />
+    </div>
+  }
+
+  @if(succeed){
+    <div class="w-full flex items-center justify-center">
+      <img src="/success-filled-svgrepo-com.svg" width="30%">
+    </div>
+  }
+
+  @if(error){
+    <div class="w-full flex items-center justify-center">
+      <img src="/error-filled-svgrepo-com.svg" width="30%">
+    </div>
+  }
+
+  @if(succeed || error){
+    <div class="flex w-full items-center justify-center mt-6">
+      <p-button (onClick)="closeLoading()">Fechar</p-button>
+    </div>
+  }
+
+</p-dialog>

@@ -36,6 +36,19 @@
             >}
           </div>
           <div class="inline-flex flex-col gap-2">
+            <label for="name" class="text-primary-50 font-semibold">Nome do usuário<span class="text-red-600">*</span></label>
+            <input
+              formControlName="name"
+              pInputText
+              id="name"
+              class="!bg-white/30 !border-2 !p-4 !text-primary-50 w-80"
+            />
+            @if(userFormErrors()["name"][0]){<small class="text-red-600">{{
+              userFormErrors()["name"][1]
+            }}</small
+            >}
+          </div>
+          <div class="inline-flex flex-col gap-2">
             <label for="password" class="text-primary-50 font-semibold"
               >Senha<span class="text-red-600"> *</span></label
             >

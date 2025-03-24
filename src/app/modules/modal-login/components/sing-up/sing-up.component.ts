@@ -4,6 +4,13 @@ import { ViaCepService } from '../../../../services/apis/via-cep.service';
 import { IbgService } from '../../../../services/apis/ibg.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Select, SelectModule } from 'primeng/select';
+import { UserService } from '../../../../services/apis/user.service';
+import { UserGetInterface, UserPostInterface } from '../../../../interfaces/user.interface';
+import { AppComponent } from '../../../../app.component';
+import { HeaderComponent } from '../../../../components/header/header.component';
+import { LoadingInterface } from '../../../../shared/loading/interface/loading.interface';
+import { AddressInterface } from '../../../../interfaces/address.interface';
+import { AddressService } from '../../../../services/apis/address.service';
 
 @Component({
   selector: 'app-sing-up',
@@ -14,25 +21,32 @@ import { Select, SelectModule } from 'primeng/select';
 export class SingUpComponent implements OnInit {
   @Output() onCloseModal: EventEmitter<void> = new EventEmitter();
   @Output() onChangeStatusAccount: EventEmitter<boolean> = new EventEmitter();
+  @Output() onStateLoading: EventEmitter<boolean> = new EventEmitter();
+  @Output() onResultLoading: EventEmitter<LoadingInterface> = new EventEmitter();
   @ViewChild('stepper') stepper: Stepper;
   @ViewChild('selectMunicipio') selectMunicipio: Select;
   @ViewChild('estadoSelect') selectEstado: Select;
 
 
   public municipiosSelect: WritableSignal<({ name: string, code: string })[]> = signal([]);
+  public loadingMessages: Partial<LoadingInterface> = {
+    errorMessage: "Ocorreu um erro ao criar usuário!",
+    succeedMessage: "Usuário criado!"
+  };
   public ufs: any[] = [];
   public ufsSelect: WritableSignal<({ name: string, code: string })[]> = signal([]);
   public formCep: FormGroup;
   public formUser: FormGroup;
   public setMunicipio: (() => void) | null = null;
   public cepErrorMessage: WritableSignal<string> = signal("");
-  public estadoErrorMessage:WritableSignal<string> = signal("");
+  public estadoErrorMessage: WritableSignal<string> = signal("");
   public municipioErrorMessage: WritableSignal<string> = signal("");
   public addressErrorMessage: WritableSignal<string> = signal("");
   public houseNumberErrorMessage: WritableSignal<string> = signal("");
   public userFormErrors: WritableSignal<Record<string, [boolean, string, string]>> = signal({
     email: [false, "Email inválido", "Email inválido"],
     cpf: [false, "CPF inválido", "CPF inválido"],
+    name: [false, "Campo nome é obrigatório", "Campo nome é obrigatório"],
     password: [false, "Senha inválida", "Senha inválida"],
     passwordValidate: [false, "Confirme a senha", "Confirme a senha"]
   })
@@ -46,7 +60,7 @@ export class SingUpComponent implements OnInit {
 
 
 
-  constructor(private ibgeService: IbgService, private formBuilder: FormBuilder, private elementRef: ElementRef, private viaCepService: ViaCepService) { }
+  constructor(private addressService: AddressService, private ibgeService: IbgService, private formBuilder: FormBuilder, private userService: UserService, private viaCepService: ViaCepService) { }
 
   ngOnInit(): void {
     this.setUFs();
@@ -61,12 +75,11 @@ export class SingUpComponent implements OnInit {
       municipios: [null, [Validators.required]],
       address: [null, [Validators.required]],
       houseNumber: [null, [Validators.required]]
-
     });
     this.formCep.get("municipios")?.disable();
     this.formCep.get("cep")?.valueChanges.subscribe(() => this.cepErrorMessage.set(""));
     this.formCep.get("estados")?.valueChanges.subscribe((value: { name: string, code: string }) => {
-      this.changeErrorStateUserForm("estados",false,this.addressFormErrors);
+      this.changeErrorStateUserForm("estados", false, this.addressFormErrors);
       this.ibgeService.getMunicipios(value.code).subscribe(({
         next: (result) => {
           this.municipiosSelect.set([]);
@@ -82,29 +95,29 @@ export class SingUpComponent implements OnInit {
       }));
     });
 
-    this.stateFormErrors(false,this.formCep,this.addressFormErrors,["estados","cep"]);
+    this.stateFormErrors(false, this.formCep, this.addressFormErrors, ["estados", "cep"]);
   }
 
   public setupFormUser(): void {
     this.formUser = this.formBuilder.group({
       email: [null, [Validators.required, Validators.email]],
       cpf: [null, [Validators.required]],
+      name: [null, [Validators.required]],
       password: [null, [Validators.required]],
       passwordValidate: [null, [Validators.required]]
     });
 
-    this.stateFormErrors(false,this.formUser,this.userFormErrors);
+    this.stateFormErrors(false, this.formUser, this.userFormErrors);
 
   }
 
-  public stateFormErrors(value:boolean,form:FormGroup,objectErrors:WritableSignal<Record<string, [boolean, string, string]>>,exceptionList?:string[]): void {
+  public stateFormErrors(value: boolean, form: FormGroup, objectErrors: WritableSignal<Record<string, [boolean, string, string]>>, exceptionList?: string[]): void {
     let keys = Object.keys(form.getRawValue());
-    for(let key of keys){
-      if(exceptionList) if(exceptionList.some((keyException) => keyException === key)) continue;
+    for (let key of keys) {
+      if (exceptionList) if (exceptionList.some((keyException) => keyException === key)) continue;
       form.get(key)?.valueChanges.subscribe({
         next: () => {
-          console.log(key);
-          if (this.addressFormErrors()[key]) this.changeErrorStateUserForm(key, value,objectErrors)
+          if (objectErrors()[key]) this.changeErrorStateUserForm(key, value, objectErrors)
         }
       });
     }
@@ -144,9 +157,9 @@ export class SingUpComponent implements OnInit {
   }
 
   public submitSignForm(): void {
-    if (this.formUser.invalid) return this.inputErrors(this.formUser,this.userFormErrors);
+    if (this.formUser.invalid) return this.inputErrors(this.formUser, this.userFormErrors);
     if (this.formUser.get("password")?.value !== this.formUser.get("passwordValidate")?.value) {
-      this.changeErrorStateUserForm("passwordValidate", true, this.userFormErrors,"Senhas não são iguais");
+      this.changeErrorStateUserForm("passwordValidate", true, this.userFormErrors, "Senhas não são iguais");
       return;
     }
     this.changeStep(2);
@@ -154,29 +167,58 @@ export class SingUpComponent implements OnInit {
 
   public submitCepForm(): void {
     let validForm: boolean = true;
-    if(this.formCep.get("cep")?.invalid) {
+    if (this.formCep.get("cep")?.invalid) {
       this.cepErrorMessage.set("É obrigatório colocar o CEP");
       validForm = false;
     }
     if (this.formCep.invalid) {
-      this.inputErrors(this.formCep,this.addressFormErrors,["cep"]);
+      this.inputErrors(this.formCep, this.addressFormErrors, ["cep"]);
       validForm = false;
     }
 
-    if(validForm){
-
+    if (validForm) {
+      this.onStateLoading.emit(true);
+      let userData = this.formUser.getRawValue();
+      delete userData.passwordValidate;
+      let newUser: UserPostInterface = userData;
+      this.userService.postUser(newUser).subscribe({
+        next: (newUser: UserGetInterface) => {
+          console.log(newUser);
+          let address: AddressInterface = {
+            cep: this.formCep.get('cep')?.value,
+            municipality:this.formCep.get('municipios')?.value,
+            state:this.formCep.get('estados')?.value,
+            address:this.formCep.get('address')?.value,
+            houseNumber:this.formCep.get('houseNumber')?.value,
+            userId: newUser.id
+          }
+          this.addressService.postAddress(address).subscribe({
+            next: (result) => {
+              this.onResultLoading.emit({...this.loadingMessages as LoadingInterface,value:true});
+            },
+            error: (error) => {
+              this.loadingMessages.errorMessage = "Ocorreu ao criar o endereço!";
+              this.onResultLoading.emit({...this.loadingMessages as LoadingInterface,value:true});
+            }
+          });
+        },
+        error: (error) => {
+          this.onResultLoading.emit({...this.loadingMessages as LoadingInterface,value:true});
+          console.log(error);
+        }
+      });
     }
   }
 
-  public inputErrors(form: FormGroup, objectErrors: WritableSignal<Record<string, [boolean, string, string]>>,exceptionList?:string[]): void {
+  public inputErrors(form: FormGroup, objectErrors: WritableSignal<Record<string, [boolean, string, string]>>, exceptionList?: string[]): void {
     let keys = Object.keys(form.getRawValue());
     for (let key of keys) {
-      if(exceptionList) if(exceptionList.some((keyException) => keyException === key)) continue;
-      if (form.get(key)?.invalid) this.changeErrorStateUserForm(key, true,objectErrors);
+      if (exceptionList) if (exceptionList.some((keyException) => keyException === key)) continue;
+      if (form.get(key)?.invalid) this.changeErrorStateUserForm(key, true, objectErrors);
     }
   }
 
-  public changeErrorStateUserForm(key: string, value: boolean, objectErrors:WritableSignal<Record<string, [boolean, string, string]>>, messageError?: string): void {
+  public changeErrorStateUserForm(key: string, value: boolean, objectErrors: WritableSignal<Record<string, [boolean, string, string]>>, messageError?: string): void {
     objectErrors.update((objectErrors: Record<string, [boolean, string, string]>) => {
       if (messageError) {
         (objectErrors[key as keyof typeof objectErrors] as [boolean, string, string])[1] = messageError;

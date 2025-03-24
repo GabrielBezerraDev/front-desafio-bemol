@@ -14,14 +14,20 @@
         <app-sing-in
         (onCloseModal)="closeModal()"
         (onChangeStatusAccount)="changeStatusAccount($event)"
+        (onStateLoading)="stateLoading($event)"
+        (onResultLoading)="resultLoading($event)"
         ></app-sing-in>
       }
       @else{
         <app-sing-up
         (onCloseModal)="closeModal()"
         (onChangeStatusAccount)="changeStatusAccount($event)"
+        (onStateLoading)="stateLoading($event)"
+        (onResultLoading)="resultLoading($event)"
         ></app-sing-up>
       }
     </div>
   </ng-template>
 </p-dialog>
+
+<app-loading #loading></app-loading>

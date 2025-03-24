@@ -13,6 +13,7 @@ import { SelectModule } from 'primeng/select';
 import { PrimeIcons } from 'primeng/api';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Tooltip } from 'primeng/tooltip';
+import { LoadingComponent } from '../../shared/loading/loading.component';
 
 
 
@@ -24,6 +25,7 @@ import { Tooltip } from 'primeng/tooltip';
     SingInComponent
   ],
   imports: [
+    LoadingComponent,
     CommonModule,
     ButtonModule,
     StepperModule,
