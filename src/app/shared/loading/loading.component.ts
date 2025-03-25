@@ -23,9 +23,9 @@ export class LoadingComponent {
 
   closeLoading(): void {
     this.stateLoading(false);
+    if(!this.error) ModalLoginComponent.subjectModalClose.next();
     this.succeed ? this.succeed = false : this.error = false;
     this.title = "Procurando usuário";
-    ModalLoginComponent.subjectModal.next();
 
   }
 

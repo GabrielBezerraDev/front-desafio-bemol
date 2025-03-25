@@ -12,11 +12,10 @@ export class ChatService {
 
   public generatePrompt(message: string): Observable<any> {
     let user = getCurrentUser();
-    console.log(user[0].id);
     let bodyObj = {
       model: "deepseek-r1:14b",
       prompt: message,
-      userId: user[0].id,
+      userId: user.id,
       stream: false,
       options: {
         temperature: 0.7,

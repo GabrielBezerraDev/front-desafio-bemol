@@ -11,7 +11,12 @@
       >
         <div class="flex flex-col">
           <div
-            (click)="initChatWithBot()"
+            (click)="
+              initChatWithBot(
+                'Checamos que você não fez login!',
+                'Faça login ou crie uma conta para continuar usando nossos serviços :)'
+              )
+            "
             class="list-element flex items-center gap-5 font-bold text-blue-900 p-7"
           >
             <img src="chat-round-line-svgrepo-com.svg" width="15%" />
@@ -19,6 +24,13 @@
           </div>
           <hr class="text-black" />
           <div
+            (click)="
+              initChatWithBot(
+                'Serviço não disponível',
+                'No momento esse serviço não se encontra disponível, por favor, volte mais tarde!',
+                false
+              )
+            "
             class="list-element flex items-center gap-5 font-bold text-blue-900 p-7"
           >
             <img src="/telegram-svgrepo-com.svg" width="15%" />
@@ -26,6 +38,13 @@
           </div>
           <hr class="text-black" />
           <div
+            (click)="
+              initChatWithBot(
+                'Serviço não disponível',
+                'No momento esse serviço não se encontra disponível, por favor, volte mais tarde!',
+                false
+              )
+            "
             class="list-element flex items-center gap-5 font-bold text-blue-900 p-7"
           >
             <img src="/discord-svgrepo-com.svg" width="15%" />
@@ -69,11 +88,18 @@
             </p-inputgroup-addon>
             <p-inputgroup-addon class="border button-ia p-3">
               @if(!waitResponse()){
-                <p-button (onClick)="sendPrompt()" class="font-bold"
+              <p-button (onClick)="sendPrompt()" class="font-bold"
                 >Enviar</p-button
               >
               }@if(waitResponse()) {
-                <p-progress-spinner tooltipPosition="top" pTooltip="Esperando resposta da IA..." strokeWidth="8" fill="transparent" animationDuration=".5s" [style]="{ width: '30px', height: '30px' }" />
+              <p-progress-spinner
+                tooltipPosition="top"
+                pTooltip="Esperando resposta da IA..."
+                strokeWidth="8"
+                fill="transparent"
+                animationDuration=".5s"
+                [style]="{ width: '30px', height: '30px' }"
+              />
               }
             </p-inputgroup-addon>
           </p-input-group>
@@ -83,3 +109,5 @@
     </div>
   </div>
 </main>
+
+<app-dialog-message #dialogMessage></app-dialog-message>

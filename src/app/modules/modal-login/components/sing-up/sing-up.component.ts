@@ -11,6 +11,7 @@ import { HeaderComponent } from '../../../../components/header/header.component'
 import { LoadingInterface } from '../../../../shared/loading/interface/loading.interface';
 import { AddressInterface } from '../../../../interfaces/address.interface';
 import { AddressService } from '../../../../services/apis/address.service';
+import { ComponentsService } from '../../../../services/components.service';
 
 @Component({
   selector: 'app-sing-up',
@@ -30,7 +31,7 @@ export class SingUpComponent implements OnInit {
 
   public municipiosSelect: WritableSignal<({ name: string, code: string })[]> = signal([]);
   public loadingMessages: Partial<LoadingInterface> = {
-    errorMessage: "Ocorreu um erro ao criar usuário!",
+    errorMessage: "Usuário já existente!",
     succeedMessage: "Usuário criado!"
   };
   public ufs: any[] = [];
@@ -183,27 +184,28 @@ export class SingUpComponent implements OnInit {
       let newUser: UserPostInterface = userData;
       this.userService.postUser(newUser).subscribe({
         next: (newUser: UserGetInterface) => {
-          console.log(newUser);
           let address: AddressInterface = {
             cep: this.formCep.get('cep')?.value,
-            municipality:this.formCep.get('municipios')?.value,
-            state:this.formCep.get('estados')?.value,
-            address:this.formCep.get('address')?.value,
-            houseNumber:this.formCep.get('houseNumber')?.value,
+            municipality: this.formCep.get('municipios')?.value,
+            state: this.formCep.get('estados')?.value,
+            address: this.formCep.get('address')?.value,
+            houseNumber: this.formCep.get('houseNumber')?.value,
             userId: newUser.id
           }
           this.addressService.postAddress(address).subscribe({
-            next: (result) => {
-              this.onResultLoading.emit({...this.loadingMessages as LoadingInterface,value:true});
+            next: (address) => {
+              this.onResultLoading.emit({ ...this.loadingMessages as LoadingInterface, value: true });
+              localStorage.setItem("currentUser", JSON.stringify(newUser));
+              ComponentsService.subjectComponents.next(newUser)
             },
             error: (error) => {
-              this.loadingMessages.errorMessage = "Ocorreu ao criar o endereço!";
-              this.onResultLoading.emit({...this.loadingMessages as LoadingInterface,value:true});
+              this.loadingMessages.errorMessage = "Ocorreu um erro ao criar o endereço!";
+              this.onResultLoading.emit({ ...this.loadingMessages as LoadingInterface, value: false });
             }
           });
         },
         error: (error) => {
-          this.onResultLoading.emit({...this.loadingMessages as LoadingInterface,value:true});
+          this.onResultLoading.emit({ ...this.loadingMessages as LoadingInterface, value: false });
           console.log(error);
         }
       });

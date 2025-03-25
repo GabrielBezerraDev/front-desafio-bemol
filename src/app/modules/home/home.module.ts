@@ -11,6 +11,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { ButtonModule } from 'primeng/button';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { DialogMessageComponent } from '../../shared/dialog-message/dialog-message.component';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     HomeRoutingModule,
     InputGroupModule,
     InputGroupAddonModule,
+    DialogMessageComponent,
     ButtonModule,
     ReactiveFormsModule,
     ProgressSpinnerModule

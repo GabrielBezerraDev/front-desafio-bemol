@@ -22,8 +22,8 @@ export class SingInComponent implements OnInit {
   public formUserError: WritableSignal<string> = signal("");
   public formUser: FormGroup;
   public loadingMessages: Partial<LoadingInterface> = {
-    errorMessage: "Ocorreu um ao criar usuário!",
-    succeedMessage: "Usuário criado!"
+    errorMessage: "Ocorreu um erro a fazer login!",
+    succeedMessage: "Login feito com sucesso!"
   };
 
   constructor(private formBuilder: FormBuilder, private userService: UserService) { }
@@ -70,11 +70,11 @@ export class SingInComponent implements OnInit {
       }
       userLogin.password = this.formUser.get("password")?.value;
       if (value) {
-        this.userService.postSessionLogin(userLogin).pipe(delay(3000)).subscribe({
+        this.userService.postSessionLogin(userLogin).subscribe({
           next: (data: any) => {
             this.onResultLoading.emit({...this.loadingMessages as LoadingInterface,value:true});
-            localStorage.setItem("currentUser", JSON.stringify(data.user));
-            ComponentsService.subjectComponents.next(data.user)
+            localStorage.setItem("currentUser", JSON.stringify(data.user[0]));
+            ComponentsService.subjectComponents.next(data.user[0])
           },
           error: (error) => {
             this.onResultLoading.emit({...this.loadingMessages as LoadingInterface,value:false});

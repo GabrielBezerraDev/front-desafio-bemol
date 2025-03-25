@@ -15,14 +15,30 @@ import { LoadingInterface } from '../../shared/loading/interface/loading.interfa
 export class ModalLoginComponent implements OnInit {
   visible: boolean = false;
   haveAccount: WritableSignal<boolean> = signal(true);
-  static subjectModal: Subject<void> = new Subject();
-  observableModal: Observable<void> = ModalLoginComponent.subjectModal.asObservable();
+  static subjectModalClose: Subject<void> = new Subject();
+  static subjectModalOpen: Subject<void> = new Subject();
+  static subjectModalStateAccount: Subject<boolean> = new Subject();
+  observableModalClose: Observable<void> = ModalLoginComponent.subjectModalClose.asObservable();
+  observableModalOpen: Observable<void> = ModalLoginComponent.subjectModalOpen.asObservable();
+  observableModalStateAccount: Observable<boolean> = ModalLoginComponent.subjectModalStateAccount.asObservable();
   @ViewChild("loading") loading: LoadingComponent;
 
   ngOnInit(): void {
-    this.observableModal.subscribe({
+    this.observableModalClose.subscribe({
       next: () => {
         this.closeModal();
+      }
+    });
+
+    this.observableModalOpen.subscribe({
+      next: () => {
+        this.showModal();
+      }
+    });
+
+    this.observableModalStateAccount.subscribe({
+      next: (state:boolean) => {
+        this.haveAccount.set(state);
       }
     })
   }

@@ -17,17 +17,19 @@ export class HeaderComponent implements OnInit {
   public nameUser: WritableSignal<string> = signal("");
   public userLoggedIn: WritableSignal<boolean> = signal(true);
 
-  constructor(){}
+  constructor() { }
 
   ngOnInit(): void {
-    this.observable.subscribe((user:any) => {
-      this.nameUser.set(user[0].name);
+    this.observable.subscribe((user: any) => {
+      console.log(user);
+      if (!user) return;
+      this.nameUser.set(user.name);
       this.userLoggedIn.set(false);
     })
   }
 
-  public openModal():void{
-    if(!this.modalLogin.haveAccount()) this.modalLogin.haveAccount.set(true);
+  public openModal(): void {
+    if (!this.modalLogin.haveAccount()) this.modalLogin.haveAccount.set(true);
     this.modalLogin.showModal();
   }
 

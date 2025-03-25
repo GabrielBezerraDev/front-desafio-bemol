@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, signal, WritableSignal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
 import { AppComponent } from '../../app.component';
 import { Observable } from 'rxjs';
 import { ComponentsService } from '../../services/components.service';
@@ -7,6 +7,8 @@ import { ChatService } from '../../services/apis/chat.service';
 import { FormControl } from '@angular/forms';
 import { getCurrentUser } from '../../utils/utils-user';
 import { sign } from 'crypto';
+import { ModalLoginComponent } from '../modal-login/modal-login.component';
+import { DialogMessageComponent } from '../../shared/dialog-message/dialog-message.component';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +16,8 @@ import { sign } from 'crypto';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit {
+  @ViewChild('dialogMessage') dialogMessage: DialogMessageComponent;
   public initChat: boolean = false;
   public userLoggedIn: boolean = false;
   public observable: Observable<any> = ComponentsService.subjectComponents.asObservable();
@@ -32,12 +35,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
     if (user) ComponentsService.subjectComponents.next(user);
   }
 
-  ngAfterViewInit(): void {
-
-  }
-
-  public initChatWithBot(): void {
+  public initChatWithBot(title:string,message:string,openLoginModa:boolean = true): void {
     if (this.userLoggedIn) this.initChat = true;
+    else{
+      if(openLoginModa){
+        ModalLoginComponent.subjectModalStateAccount.next(true);
+        ModalLoginComponent.subjectModalOpen.next();
+      }
+      this.dialogMessage.title = title;
+      this.dialogMessage.textContent = message;
+      this.dialogMessage.showDialog();
+    }
   }
 
   public addBoxMessage(message: string, className: string): void {
@@ -55,9 +63,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   public sendPrompt(): void {
     if (!this.prompt.value) return;
+    let userInput: string = this.prompt.value;
+    this.prompt.reset();
     this.waitResponse.set(true);
-    this.addBoxMessage(this.prompt.value, 'user-message');
-    this.chatService.generatePrompt(this.prompt.value).subscribe({
+    this.addBoxMessage(userInput, 'user-message');
+    this.chatService.generatePrompt(userInput).subscribe({
       next: (result) => {
         this.waitResponse.set(false);
         this.addBoxMessage(result.messageIA, 'ia-message');
