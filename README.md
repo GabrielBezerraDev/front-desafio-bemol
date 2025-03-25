@@ -6,7 +6,7 @@
 O Chatbot Bemol Digital é um sistema omnichannel de atendimento ao cliente que utiliza uma IA de alto desempenho para oferecer respostas rápidas e precisas. Integrando um backend robusto (desenvolvido em NestJS) e um frontend moderno em Angular, o sistema proporciona uma experiência integrada e eficiente para os usuários finais.
 
 ## Frontend
-![Texto Alternativo](/home_page_bemol.png)
+![Texto Alternativo](/public/home_page_bemol.png)
 
 ### Tecnologias Necessárias
 Para rodar o frontend, você precisará ter instalado:
